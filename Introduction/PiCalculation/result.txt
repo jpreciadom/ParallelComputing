@@ -1,0 +1,173 @@
+Compiling program...
+Program copiled!
+
+The program will be excecuted 10 times
+
+Excecuting for 1 threads:
+0m10,843s
+0m10,835s
+0m10,837s
+0m10,838s
+0m10,830s
+0m10,832s
+0m10,840s
+0m10,848s
+0m10,833s
+0m10,832s
+For 1 threads the average time was 10.836s
+
+Excecuting for 2 threads:
+0m18,120s
+0m19,576s
+0m18,674s
+0m18,447s
+0m18,769s
+0m18,394s
+0m19,444s
+0m19,014s
+0m18,038s
+0m17,575s
+For 2 threads the average time was 18.605s
+
+Excecuting for 4 threads:
+0m9,379s
+0m9,597s
+0m9,501s
+0m9,427s
+0m9,775s
+0m9,289s
+0m9,715s
+0m9,614s
+0m9,542s
+0m9,461s
+For 4 threads the average time was 9.530s
+
+Excecuting for 8 threads:
+0m11,938s
+0m11,150s
+0m11,789s
+0m11,435s
+0m12,786s
+0m12,255s
+0m11,826s
+0m10,907s
+0m11,732s
+0m11,415s
+For 8 threads the average time was 11.723s
+
+Excecuting for 16 threads:
+0m7,240s
+0m7,234s
+0m8,075s
+0m7,010s
+0m7,346s
+0m7,185s
+0m7,013s
+0m7,277s
+0m7,512s
+0m7,574s
+For 16 threads the average time was 7.346s
+
+Excecuting for 24 threads:
+0m5,080s
+0m4,844s
+0m4,896s
+0m5,009s
+0m4,860s
+0m4,778s
+0m4,693s
+0m4,941s
+0m4,837s
+0m4,804s
+For 24 threads the average time was 4.874s
+
+Excecuting for 32 threads:
+0m3,348s
+0m3,140s
+0m3,216s
+0m3,129s
+0m3,512s
+0m3,102s
+0m3,037s
+0m3,364s
+0m3,338s
+0m3,429s
+For 32 threads the average time was 3.261s
+
+Excecuting for 40 threads:
+0m2,232s
+0m2,354s
+0m2,520s
+0m2,486s
+0m2,415s
+0m2,472s
+0m2,265s
+0m2,414s
+0m2,298s
+0m2,405s
+For 40 threads the average time was 2.386s
+
+Excecuting for 48 threads:
+0m2,096s
+0m1,920s
+0m1,759s
+0m2,009s
+0m2,211s
+0m2,135s
+0m2,088s
+0m1,990s
+0m2,015s
+0m1,909s
+For 48 threads the average time was 2.013s
+
+Excecuting for 56 threads:
+0m1,739s
+0m1,819s
+0m1,695s
+0m1,789s
+0m1,552s
+0m1,660s
+0m1,589s
+0m1,907s
+0m1,686s
+0m1,722s
+For 56 threads the average time was 1.715s
+
+Excecuting for 64 threads:
+0m1,505s
+0m1,638s
+0m1,566s
+0m1,483s
+0m1,619s
+0m1,583s
+0m1,562s
+0m1,628s
+0m1,440s
+0m1,676s
+For 64 threads the average time was 1.570s
+
+Excecuting for 72 threads:
+0m1,742s
+0m1,415s
+0m1,489s
+0m1,380s
+0m1,498s
+0m1,439s
+0m1,502s
+0m1,552s
+0m1,471s
+0m1,535s
+For 72 threads the average time was 1.502s
+
+Excecuting for 80 threads:
+0m1,391s
+0m1,392s
+0m1,467s
+0m1,477s
+0m1,356s
+0m1,380s
+0m1,401s
+0m1,320s
+0m1,236s
+0m1,319s
+For 80 threads the average time was 1.373s
