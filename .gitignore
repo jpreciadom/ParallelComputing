@@ -5,3 +5,6 @@
 logs
 *.log
 *.logs
+
+# Result files
+*.result.*
