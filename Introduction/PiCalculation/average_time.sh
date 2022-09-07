@@ -44,7 +44,7 @@ gcc -fopenmp pi_omp_fs.c -o pi_omp_fs.exe
 gcc -fopenmp pi_omp.c -o pi_omp.exe
 echo "Programs copiled!"\n
 
-num_of_threads=(4) #(1 2 4 8 16 24 32 40 48 56 64 72 80 128 256 512 1024)
+num_of_threads=(1 2 4 8 16 24 32 40 48 56 64 72 80 128 256 512 1024)
 programs=(pi_posix_fs pi_posix pi_omp_fs pi_omp)
 
 let total_iterations=$1
