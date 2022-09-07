@@ -1,0 +1,2 @@
+Num of threads;pi_posix_fs;pi_posix;pi_omp_fs;pi_omp
+4;20.132;4.129;131.042;3.843

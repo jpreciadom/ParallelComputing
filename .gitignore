@@ -1,2 +1,7 @@
 # Compiled files
 *.exe
+
+# Logs
+logs
+*.log
+*.logs
