@@ -5,6 +5,7 @@ function take_time() {
   num_of_threads=$2
 
   logs_file=$program_name'.logs'
+  echo '' >> $logs_file
   echo 'Running for '$num_of_threads' threads' >> $logs_file
 
   let total_time=0
@@ -68,7 +69,7 @@ do
   do
     echo '  Running '$program'...'
     average=$(take_time $program $thread)
-    result_file_line+=';'$average
+    result_file_line+=';'${average//./,}
   done
 
   # Write in result file
