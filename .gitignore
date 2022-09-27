@@ -8,3 +8,6 @@ logs
 
 # Result files
 *.result.*
+
+# Videos
+*.mp4
