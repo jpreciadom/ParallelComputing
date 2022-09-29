@@ -2,6 +2,19 @@
   "files.associations": {
     "iostream": "cpp",
     "ostream": "cpp",
-    "atomic": "cpp"
+    "atomic": "cpp",
+    "stop_token": "cpp",
+    "array": "cpp",
+    "*.tcc": "cpp",
+    "memory": "cpp",
+    "future": "cpp",
+    "istream": "cpp",
+    "functional": "cpp",
+    "tuple": "cpp",
+    "utility": "cpp",
+    "variant": "cpp",
+    "string_view": "cpp",
+    "initializer_list": "cpp",
+    "valarray": "cpp"
   }
 }
