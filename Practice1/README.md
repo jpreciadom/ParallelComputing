@@ -24,7 +24,7 @@ El script de bash compila, ejecuta y muestra y guarda los resultados de ejecuci√
 - La ruta donde se va a guardar el video de salida** (Obligatorio)**
 
 Por ejemplo:
-`$ bash excecute.sh 5 videos/video1.mp4 out_videos/video1.out.mp4`
+`$ bash execute.sh 5 videos/video1.mp4 out_videos/video1.out.mp4`
 
 Los tiempos de ejecuci√≥n son almacenados en un archvio llamado execution.result.csv
 

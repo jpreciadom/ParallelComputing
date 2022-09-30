@@ -11,3 +11,6 @@ logs
 
 # Videos
 *.mp4
+
+# .tar files
+*.tar
