@@ -12,22 +12,11 @@ function take_time() {
   for (( i=0; i<$total_iterations; i++ ))
   do
     result=$((time ./videoFaceBlur.exe $video_in_path $video_out_path $thread) 2>&1)
-    echo $result
-    result=$(echo ${result##*real})
-    result=$(echo ${result%%user*})
-    
-    result_length=$(echo ${#result})
-    m_index=$(expr index $result "m")
-    s_index=$(expr index $result "s")
+    result=$(echo ${result##*processed in})
+    result=$(echo ${result%%seconds*})
 
-    minutes=${result:0:m_index-1}
-    seconds=${result:m_index:result_length-m_index-1}
-    seconds=${seconds/,/.}
-
-    total_time=$(echo "scale = 3; $total_time+($minutes*60)" | bc)
-    total_time=$(echo "scale = 3; $total_time+$seconds" | bc)
-
-    echo $result
+    total_time=$(echo "scale = 3; $total_time+$result" | bc)
+    echo $result's'
   done
   average=$(echo "scale = 3; $total_time/$total_iterations" | bc)
 
