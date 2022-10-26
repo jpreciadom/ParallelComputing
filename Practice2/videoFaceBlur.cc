@@ -236,6 +236,6 @@ int main(int argc, const char **argv)
     video.release();
     writer.release();
 
-    cout << "The video was processed in " << total_execution_time_ms / 1000 << " seconds" << endl;
+    cout << "The video was processed in " << total_execution_time_ms / 1e6 << " seconds" << endl;
     return 0;
 }
