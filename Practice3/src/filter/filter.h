@@ -11,6 +11,7 @@
 using namespace std;
 using namespace cv;
 
+void setup_filter(int matrix_size);
 void apply_filter(Mat frame, Rect face);
 
 #endif

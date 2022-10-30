@@ -13,28 +13,80 @@
 using namespace cv;
 using namespace std;
 
+// Structure to grouping a frame and the faces detected on it
+struct Frame
+{
+    Mat frame;
+    vector<Rect> faces;
+};
+
 // Used to distord the face, by default it takes a matrix of 3x3 pixels and
 // replaces their values by the their average value
 int convolution_matrix_size = 3;
-int pixels_in_convolution_matrix = convolution_matrix_size * convolution_matrix_size;
 
 // Num of threads to apply the filter
 int num_of_threads;
 
-void process_frame(Mat frame)
-{
-    // Use the frame to detect the facen on it
-    vector<Rect> faces = detect_faces(frame);
+// Queue for frames and faces and its syncronizers
+bool are_remaining_frames = true;
+queue<Frame> frames;
+omp_lock_t queue_locker;
 
-    // Iterate over the detected faces and distort them
-    for (Rect face : faces)
+// Iterate frame by frame, dected the faces on it and
+// and push both into the pipe
+void process_frames(VideoCapture input_video)
+{
+    while (true)
     {
-        apply_filter(frame, face);
+        // Read the frame from the input video
+        Mat current_frame;
+        bool has_next_frame = next_frame(input_video, &current_frame);
+        // If there are not more frames break the loop
+        if (!has_next_frame) break;
+
+        // Detect the faces on the frame
+        vector<Rect> faces = detect_faces(current_frame);
+
+        // Push the frame and the faces into the queue
+        omp_set_lock(&queue_locker);
+        frames.push({ current_frame, faces });
+        omp_unset_lock(&queue_locker);
+    }
+
+    are_remaining_frames = false;
+}
+
+// Read the frame and its faces from the pipe, setup the environment
+// and lauch the process in the GPU
+void launch_gpu_process(VideoWriter output_video)
+{
+    setup_filter(pixels_in_convolution_matrix);
+    while (are_remaining_frames)
+    {
+        // Verify if there are frames pending for being processed
+        if (frames.size() == 0) continue;
+
+        omp_set_lock(&queue_locker);
+        struct Frame current_frame = frames.back();
+        frames.pop();
+        omp_unset_lock(&queue_locker);
+
+        // Apply the filer
+        for (Rect face: current_frame.faces)
+        {
+            apply_filter(current_frame.frame, face);
+        }
+
+        // Write the result
+        output_video.write(current_frame.frame);
     }
 }
 
 int main(int argc, const char **argv)
 {
+    // Init the queue locker
+    omp_init_lock(&queue_locker);
+
     // Set up the command line arguments
     const String keys =
         "{@video_in       |      | Input video path}"
@@ -68,7 +120,6 @@ int main(int argc, const char **argv)
     if (parser.has("m"))
     {
         convolution_matrix_size = parser.get<int>("m");
-        pixels_in_convolution_matrix = convolution_matrix_size * convolution_matrix_size;
     }
 
     load_cascade_classifier();
@@ -83,15 +134,19 @@ int main(int argc, const char **argv)
     // Open the video writer to save the result
     VideoWriter output_video = open_video_writer(output_video_path, input_video);
 
-    // Iterate frame by frame over the original video, process them and write the result
-    bool has_next_frame = false;
-    do
+    #pragma omp parallel num_threads(2)
     {
-        Mat current_frame;
-        has_next_frame = next_frame(input_video, &current_frame);
-        process_frame(current_frame);
-        output_video.write(current_frame);
-    } while (has_next_frame);
+        if (omp_get_thread_num() == 0)
+        {
+            // This thread read from the pipe
+            launch_gpu_process(output_video);
+        }
+        else
+        {
+            // This thread write in the pipe.
+            process_frames(input_video);
+        }
+    }
 
     // Close the input and output files
     input_video.release();

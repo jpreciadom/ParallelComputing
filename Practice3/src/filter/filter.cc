@@ -8,7 +8,17 @@
 using namespace std;
 using namespace cv;
 
+// Used to distord the face
+int convolution_matrix_size;
+int pixels_in_convolution_matrix
+
+void setup_filter(int matrix_size)
+{
+  convolution_matrix_size = matrix_size;
+  pixels_in_convolution_matrix = matrix_size * matrix_size;
+}
+
 void apply_filter(Mat frame, Rect face)
 {
-  cout << "Applying filter..." << endl;
+  
 }
