@@ -20,12 +20,11 @@ struct Frame
     vector<Rect> faces;
 };
 
-// Used to distord the face, by default it takes a matrix of 3x3 pixels and
-// replaces their values by the their average value
-int convolution_matrix_size = 3;
+// Used to distord the face
+int convolution_matrix_size_m = 21;
 
-// Num of threads to apply the filter
-int num_of_threads;
+// Num of block and threads per block to use in the GPU
+int num_of_blocks_m, threads_per_block_m;
 
 // Queue for frames and faces and its syncronizers
 bool are_remaining_frames = true;
@@ -49,7 +48,7 @@ void process_frames(VideoCapture input_video)
 
         // Push the frame and the faces into the queue
         omp_set_lock(&queue_locker);
-        frames.push({ current_frame, faces });
+        frames.push({ current_frame.clone(), faces });
         omp_unset_lock(&queue_locker);
     }
 
@@ -60,11 +59,13 @@ void process_frames(VideoCapture input_video)
 // and lauch the process in the GPU
 void launch_gpu_process(VideoWriter output_video)
 {
-    setup_filter(pixels_in_convolution_matrix);
-    while (are_remaining_frames)
+    setup_filter(convolution_matrix_size_m, threads_per_block_m);
+    while (true)
     {
         // Verify if there are frames pending for being processed
-        if (frames.size() == 0) continue;
+        bool are_pending_frames = frames.size() != 0;
+        if (!are_remaining_frames && !are_pending_frames) break;
+        else if (!are_pending_frames) continue;
 
         omp_set_lock(&queue_locker);
         struct Frame current_frame = frames.back();
@@ -89,10 +90,10 @@ int main(int argc, const char **argv)
 
     // Set up the command line arguments
     const String keys =
-        "{@video_in       |      | Input video path}"
-        "{@video_out      |      | Output video path}"
-        "{@num_threads    |      | Number of threads to apply the filter}"
-        "{m               |      | Convolution matrix size}";
+        "{@video_in             |      | Input video path}"
+        "{@video_out            |      | Output video path}"
+        "{@threads_per_block    |      | Number of threads to be launched on each block}"
+        "{m                     |      | Convolution matrix size}";
     CommandLineParser parser(argc, argv, keys);
 
     // Check if the input and output video's paths were given
@@ -106,21 +107,20 @@ int main(int argc, const char **argv)
         cout << "Error: Output video path is required" << endl;
         return -1;
     }
-    else if (!parser.has("@num_threads"))
+    else if(!parser.has("@threads_per_block"))
     {
-        cout << "Error: The number of threads is required" << endl;
+        cout << "Error: The number of threads per block is required" << endl;
         return -1;
     }
-
-    // Get the num of threads from parameters
-    num_of_threads = parser.get<int>("@num_threads");
 
     // Check if the number of pixels to group was given and calculate
     // the new values for the corresponding variables
     if (parser.has("m"))
     {
-        convolution_matrix_size = parser.get<int>("m");
+        convolution_matrix_size_m = parser.get<int>("m");
     }
+
+    threads_per_block_m = parser.get<int>("@threads_per_block");
 
     load_cascade_classifier();
 
