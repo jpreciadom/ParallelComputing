@@ -24,12 +24,15 @@ struct Frame
 int convolution_matrix_size_m = 21;
 
 // Num of block and threads per block to use in the GPU
-int num_of_blocks_m, threads_per_block_m;
+int threads_per_block_m;
 
 // Queue for frames and faces and its syncronizers
 bool are_remaining_frames = true;
 queue<Frame> frames;
 omp_lock_t queue_locker;
+
+// Execution time (Applying the filter)
+double total_execution_time_ms = 0.0;
 
 // Iterate frame by frame, dected the faces on it and
 // and push both into the pipe
@@ -75,7 +78,7 @@ void launch_gpu_process(VideoWriter output_video)
         // Apply the filer
         for (Rect face: current_frame.faces)
         {
-            apply_filter(current_frame.frame, face);
+            total_execution_time_ms += apply_filter(current_frame.frame, face);
         }
 
         // Write the result
@@ -85,15 +88,17 @@ void launch_gpu_process(VideoWriter output_video)
 
 int main(int argc, const char **argv)
 {
+    cout << "Processing video..." << endl;
+
     // Init the queue locker
     omp_init_lock(&queue_locker);
 
     // Set up the command line arguments
     const String keys =
-        "{@video_in             |      | Input video path}"
-        "{@video_out            |      | Output video path}"
-        "{@threads_per_block    |      | Number of threads to be launched on each block}"
-        "{m                     |      | Convolution matrix size}";
+        "{@video_in             |       | Input video path}"
+        "{@video_out            |       | Output video path}"
+        "{@threads_per_block    |       | Number of threads to be launched on each block}"
+        "{m                     |       | Convolution matrix size}";
     CommandLineParser parser(argc, argv, keys);
 
     // Check if the input and output video's paths were given
@@ -152,5 +157,6 @@ int main(int argc, const char **argv)
     input_video.release();
     output_video.release();
 
+    cout << "The video was processed in " << total_execution_time_ms / 1e6 << " seconds" << endl;
     return 0;
 }

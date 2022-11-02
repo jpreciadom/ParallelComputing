@@ -4,9 +4,12 @@
 #include "opencv4/opencv2/videoio.hpp"
 #include "opencv4/opencv2/core/utility.hpp"
 #include "opencv4/opencv2/opencv.hpp"
+#include "chrono"
+#include "cmath"
 
 using namespace std;
 using namespace cv;
+using namespace std::chrono;
 
 // Used to distord the face
 int convolution_matrix_size;
@@ -17,7 +20,7 @@ int threads_per_block;
 
 // Blocks of the image than will be processed on each MP
 int extended_factor;
-int image_block_width = 8, image_block_height = 8, image_block_area = 64;
+int image_block_width, image_block_height, image_block_area;
 int extended_image_block_width, extended_image_block_height, extended_image_block_area;
 
 void setup_filter(int convolution_matrix_size_p, int threads_per_block_p)
@@ -27,9 +30,19 @@ void setup_filter(int convolution_matrix_size_p, int threads_per_block_p)
   extended_factor = convolution_matrix_size / 2;
 
   // --------------------------------------------------------------------- //
+  // Assign to threads_per_block the value received as parameter
   threads_per_block = threads_per_block_p;
 
+  // Calculate the block dimensions according to the threads per block
+  for (image_block_height = sqrt(threads_per_block); image_block_height > 1; image_block_height --)
+  {
+    if (threads_per_block % image_block_height == 0) break;
+  }
+  image_block_width = threads_per_block / image_block_height;
+  image_block_area = image_block_width * image_block_height;
+
   // --------------------------------------------------------------------- //
+  // Calculate the extended block dimensions
   extended_image_block_width = image_block_width + convolution_matrix_size - 1;
   extended_image_block_height = image_block_height + convolution_matrix_size - 1;
   extended_image_block_area = extended_image_block_width * extended_image_block_height;
@@ -117,8 +130,9 @@ void pointers_to_mat(Mat frame, Rect extended_face, short *r, short *g, short *b
   }
 }
 
-void apply_filter(Mat frame, Rect face)
+double apply_filter(Mat frame, Rect face)
 {
+  auto start_time = high_resolution_clock::now();
   cudaError_t cuda_err = cudaSuccess;
 
   // Calculate the face dimenssions according to detected and returned in face
@@ -241,4 +255,7 @@ void apply_filter(Mat frame, Rect face)
   free(g);
   free(b);
   free(additional_data);
+
+  auto finish_time = high_resolution_clock::now();
+  return duration_cast<microseconds>(finish_time - start_time).count();
 }

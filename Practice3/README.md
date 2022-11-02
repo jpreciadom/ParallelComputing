@@ -12,10 +12,11 @@ Para eliminar todo el contenido de la carpeta out_videos
 El programa recibe tres argumentos por consola:
 - La ruta del video de entrada** (Obligatorio)**
 - La ruta donde se va a guardar el resultado** (Obligatorio)**
-- La cantidad de pixeles a agrupar para distorcionar la imagen** (Opcional, tiene un valor de 25 por defecto)**
+- Cantidad de hilos para correr en cada bloque** (Obligatorio)**
+- Tamaño de la matriz de convolución** (Opcional, tiene un valor de 21 por defecto)**
 
 Por ejemplo:
-`$ ./videoFaceBlur.exe videos/video_in.mp4 out_videos/video_out.mp4 -pixels=30
+`$ ./videoFaceBlur.exe videos/video_in.mp4 out_videos/video_out.mp4 64 -m=31`
 
 ## Ejecución usando el script bash
 El script de bash compila, ejecuta y muestra y guarda los resultados de ejecución del programa. Recibe los siguientes argumentos:

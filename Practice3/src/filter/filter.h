@@ -12,6 +12,6 @@ using namespace std;
 using namespace cv;
 
 void setup_filter(int convolution_matrix_size_p, int threads_per_block_p);
-void apply_filter(Mat frame, Rect face);
+double apply_filter(Mat frame, Rect face);
 
 #endif
