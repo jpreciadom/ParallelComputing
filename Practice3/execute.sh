@@ -40,7 +40,7 @@ echo
 result_file_name="execution.result.csv"
 echo 'Num of threads;Average time' > $result_file_name
 
-num_of_threads=(1 2 3 4 5 6 7 8 16 24 32 64 68 128 256 356 512 1024 2048)
+num_of_threads=(1 2 3 4 5 6 7 8 16 24 32 64 68 128 256 512 1024)
 for thread in ${num_of_threads[@]}
 do
   echo 'Running for' $thread ' threads...'
