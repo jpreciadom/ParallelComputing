@@ -11,9 +11,9 @@
 using namespace std;
 using namespace cv;
 
-void setup_filter(int convolution_matrix_size_p, int threads_per_block_p);
+void setup_filter(int convolution_matrix_size_p);
 void mat_to_pointers(Mat frame, short *r, short *g, short *b);
 void pointers_to_mat(Mat frame, short *r, short *g, short *b);
-double apply_filter(Mat frame, Rect face);
+void apply_filter(Mat frame, Rect face);
 
 #endif

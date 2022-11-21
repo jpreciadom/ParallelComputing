@@ -1,4 +1,4 @@
-CC = nvcc
+CC = mpic++
 work_dir = src/
 
 all: $(work_dir)videoFaceBlur.cc
@@ -9,11 +9,11 @@ all: $(work_dir)videoFaceBlur.cc
 				-lopencv_imgproc \
 				-lopencv_videoio \
 				-lopencv_core \
-				-Xcompiler -fopenmp \
+				-fopenmp \
 				-I$(work_dir)/video_processor \
 				$(work_dir)/video_processor/video_processor.cc \
 				-I$(work_dir)/filter \
-				$(work_dir)/filter/filter.cu
+				$(work_dir)/filter/filter.cc
 			@ echo "The code has been compiled successfully"
 
 clean:
