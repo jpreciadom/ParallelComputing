@@ -145,12 +145,8 @@ void master_nodes_process(String input_video_path, String output_video_path)
         // If the current frame correspond correspond to a slave node get the frame reading it
         else
         {
-            short next_frame_flag;
             MPI_Status recv_status;
 
-            // Read if there is another frame
-            MPI_Recv(&next_frame_flag, 1, MPI_SHORT, frame_id, 0, MPI_COMM_WORLD, &recv_status);
-            if (next_frame_flag == 0) break;
             // Read the frame RGB fractor from the slave node
             MPI_Recv(r, pixels_per_frame, MPI_SHORT, frame_id, 0, MPI_COMM_WORLD, &recv_status);
             MPI_Recv(g, pixels_per_frame, MPI_SHORT, frame_id, 0, MPI_COMM_WORLD, &recv_status);
@@ -229,23 +225,16 @@ void slave_nodes_process()
         // Convert the Mat object to RGB factor
         mat_to_pointers(current_frame, r, g, b);
 
-        // Send the next_frame_flag as 1 to the master node
-        MPI_Send(&next_frame_flag, 1, MPI_SHORT, 0, 0, MPI_COMM_WORLD);
-        cout << "Slave - Flag copied" << endl;
         // Send the RGB factor back to the master node
         MPI_Send(r, pixels_per_frame, MPI_SHORT, 0, 0, MPI_COMM_WORLD);
         MPI_Send(g, pixels_per_frame, MPI_SHORT, 0, 0, MPI_COMM_WORLD);
         MPI_Send(b, pixels_per_frame, MPI_SHORT, 0, 0, MPI_COMM_WORLD);
-        cout << "Slave - Frame sended" << endl;
     }
-    // Send the next_frame_flag as 0 to indicate there are not more frames
-    MPI_Send(&next_frame_flag, 1, MPI_SHORT, 0, 0, MPI_COMM_WORLD);
 
     // Free memory
     free(r);
     free(g);
     free(b);
-    cout << "Slave - Finished" << endl;
 }
 
 int main(int argc, char **argv)
