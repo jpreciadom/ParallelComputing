@@ -83,11 +83,11 @@ void apply_filter(Mat frame, Rect face)
         // Store the average RGB factor using the convolution matrix
         int average_r = 0, average_g = 0, average_b = 0;
         // Iterate over the pixels around the selected one and calculate the sum of their RGB factors
-        for (int dx = x - displacement; dx <= displacement; dx++)
+        for (int dx = -displacement; dx <= displacement; dx++)
         {
-          for (int dy = y - displacement; dy <= displacement; dy++)
+          for (int dy = -displacement; dy <= displacement; dy++)
           {
-            Vec3b pixel = frame.at<Vec3b>(face.y + dy, face.x + dx);
+            Vec3b pixel = frame.at<Vec3b>(face.y + dy + y, face.x + dx + x);
             average_r += pixel[0];
             average_g += pixel[1];
             average_b += pixel[2];
@@ -95,10 +95,10 @@ void apply_filter(Mat frame, Rect face)
         }
 
         // Asigng the average RGB factor to the selected pixel into the register Mat
-        Vec3b &pixel = reg_frame.at<Vec3b>(y, x);
-        pixel[0] = average_r / pixels_in_convolution_matrix;
-        pixel[1] = average_g / pixels_in_convolution_matrix;
-        pixel[2] = average_b / pixels_in_convolution_matrix;
+        Vec3b &reg_pixel = reg_frame.at<Vec3b>(y, x);
+        reg_pixel[0] = average_r / pixels_in_convolution_matrix;
+        reg_pixel[1] = average_g / pixels_in_convolution_matrix;
+        reg_pixel[2] = average_b / pixels_in_convolution_matrix;
       }
     }
 
