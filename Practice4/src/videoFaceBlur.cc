@@ -4,6 +4,7 @@
 #include "opencv4/opencv2/videoio.hpp"
 #include "opencv4/opencv2/core/utility.hpp"
 #include "opencv4/opencv2/opencv.hpp"
+#include "chrono"
 #include "iostream"
 #include "mpi.h"
 
@@ -12,6 +13,7 @@
 
 using namespace cv;
 using namespace std;
+using namespace std::chrono;
 
 // Used to distord the face
 int convolution_matrix_size_m = 21;
@@ -239,8 +241,6 @@ void slave_nodes_process()
 
 int main(int argc, char **argv)
 {
-    // cout << "Processing video..." << endl;
-
     // Set up the command line arguments
     const String keys =
         "{@video_in             |       | Input video path}"
@@ -280,11 +280,20 @@ int main(int argc, char **argv)
     MPI_Comm_rank( MPI_COMM_WORLD, &node_id );
     MPI_Comm_size( MPI_COMM_WORLD, &num_of_nodes );
 
-    if (node_id == 0) master_nodes_process(input_video_path, output_video_path);
+    if (node_id == 0)
+    {
+        auto start_time = high_resolution_clock::now();
+        cout << "Processing video..." << endl;
+
+        master_nodes_process(input_video_path, output_video_path);
+
+        auto finish_time = high_resolution_clock::now();
+        total_execution_time_ms = duration_cast<microseconds>(finish_time - start_time).count();
+        cout << "The video was processed in " << total_execution_time_ms / 1e6 << " seconds" << endl;
+    }
     else slave_nodes_process();
 
     MPI_Finalize( );
 
-    // cout << "The video was processed in " << total_execution_time_ms / 1e6 << " seconds" << endl;
     return 0;
 }

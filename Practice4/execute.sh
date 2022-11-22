@@ -11,7 +11,7 @@ function take_time() {
   let total_time=0
   for (( i=0; i<$total_iterations; i++ ))
   do
-    result=$((time ./videoFaceBlur.exe $video_in_path $video_out_path $thread) 2>&1)
+    result=$(mpirun -np $thread ./videoFaceBlur.exe $video_in_path $video_out_path)
     result=$(echo ${result##*processed in})
     result=$(echo ${result%%seconds*})
 
@@ -40,7 +40,7 @@ echo
 result_file_name="execution.result.csv"
 echo 'Num of threads;Average time' > $result_file_name
 
-num_of_threads=(1 2 3 4 5 6 7 8 16 24 32 64 68 128 256 512 1024)
+num_of_threads=(1 2 3 4 5 6 7 8)
 for thread in ${num_of_threads[@]}
 do
   echo 'Running for' $thread ' threads...'
