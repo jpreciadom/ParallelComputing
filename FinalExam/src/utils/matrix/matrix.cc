@@ -1,7 +1,11 @@
 #include "stdlib.h"
 #include "stdio.h"
-#include "time.h"
 #include "matrix.h"
+
+void setup_seed(int seed)
+{
+  srand(seed);
+}
 
 // Create and fill a matrix of size nxn
 struct Matrix * generate_matrix(unsigned int n, bool auto_fill)
@@ -28,8 +32,6 @@ struct Matrix * generate_matrix(unsigned int n, bool auto_fill)
   // Fill the matrix
   if (auto_fill)
   {
-    time_t nTime;
-    srand((unsigned) time(&nTime));
     for (int i = 0; i < matrix->area; i++)
     {
       *(matrix->pointer + i) = rand() % 100000;

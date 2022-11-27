@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "iostream"
 #include "chrono"
+#include "time.h"
 #include "omp.h"
 
 #include "../utils/matrix/matrix.h"
@@ -61,9 +62,16 @@ int main(int argc, const char **argv)
   int matrix_size = atoi(*(argv + 2));
 
   // Create the matrixes
+  {
+    time_t nTime;
+    int seed = (int) time(&nTime);
+    setup_seed(0);
+  }
   struct Matrix *matrix_a = generate_matrix(matrix_size, true);
   struct Matrix *matrix_b = generate_matrix(matrix_size, true);
   struct Matrix *matrix_result = generate_matrix(matrix_size, false);
+
+  mul_matrixes(matrix_a, matrix_b, matrix_result);
 
   // cout << "Matrix A:" << endl;
   // print_matrix(matrix_a);
@@ -72,8 +80,6 @@ int main(int argc, const char **argv)
   // cout << "Matrix B:" << endl;
   // print_matrix(matrix_b);
   // cout << endl;
-
-  mul_matrixes(matrix_a, matrix_b, matrix_result);
 
   // cout << "Result:" << endl;
   // print_matrix(matrix_result);

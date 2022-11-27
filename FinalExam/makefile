@@ -4,6 +4,14 @@ OMPI = mpic++
 
 work_dir = src/
 
+open_mpi: $(work_dir)/openmpi/openmpi_index.cc
+	@ $(OMPI) $(work_dir)/openmpi/openmpi_index.cc \
+		-o $(work_dir)/openmpi/openmpi_index.exe \
+		-fopenmp \
+		-I$(work_dir)/utils/matrix/matrix \
+		$(work_dir)/utils/matrix/matrix.cc
+	@ echo "OpenMPI code have been compiled!"
+
 open_mp: $(work_dir)/openmp/openmp_index.cc
 	@ $(OMP) $(work_dir)/openmp/openmp_index.cc \
 		-o $(work_dir)/openmp/openmp_index.exe \

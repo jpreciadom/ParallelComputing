@@ -7,6 +7,7 @@ struct Matrix {
   unsigned long area;
 };
 
+void setup_seed(int seed);
 struct Matrix * generate_matrix(unsigned int n, bool auto_fill);
 void print_matrix(struct Matrix *matrix);
 long get_value(struct Matrix *matrix, int x, int y);
