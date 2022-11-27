@@ -7,8 +7,10 @@ struct Matrix {
   unsigned long area;
 };
 
-struct Matrix * generate_matrix(unsigned int n);
-long get_value(struct Matrix *matrix, int i, int j);
-void set_value(struct Matrix * matrix, int i, int j, long value);
+struct Matrix * generate_matrix(unsigned int n, bool auto_fill);
+void print_matrix(struct Matrix *matrix);
+long get_value(struct Matrix *matrix, int x, int y);
+void set_value(struct Matrix * matrix, int x, int y, long value);
+void free_matrix(struct Matrix *matrix);
 
 #endif
