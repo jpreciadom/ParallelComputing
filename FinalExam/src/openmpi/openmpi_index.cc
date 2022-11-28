@@ -96,11 +96,10 @@ int main(int argc, char **argv)
     // Generate the seed
     time_t nTime;
     int seed = (int)time(&nTime);
-    seed = 0;
     // Give the seed from node 0 to the other nodes
     MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
     // Set the seed to matrix generator
-    setup_seed(0);
+    setup_seed(seed);
   }
   struct Matrix *matrix_a = generate_matrix(matrix_size, true);
   struct Matrix *matrix_b = generate_matrix(matrix_size, true);
