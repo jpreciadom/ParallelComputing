@@ -38,12 +38,12 @@ echo
 
 # Set up .csv out file
 result_file_name="execution.result.csv"
-echo 'Num of Nodes;Average time' > $result_file_name
+echo 'Num of threads;Average time' > $result_file_name
 
 num_of_threads=(16 24 32 40 48 56 64)
 for thread in ${num_of_threads[@]}
 do
-  echo 'Running for' $thread 'nodes...'
+  echo 'Running for' $thread 'threads...'
   result_file_line=$thread
   take_time $thread $result_file_name
   result_file_line+=';'${average//./,}
