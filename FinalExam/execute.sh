@@ -4,44 +4,32 @@ let total_iterations=$1
 
 function take_time()
 {
-    program_execution_command=$1
-    
+    local program=$1
+    local threads=$2
+    local matrix_size=$3
+    local command=''
+
+    if [[ $program = "openmp" ]]
+    then
+      command='src/openmp/openmp.exe '$threads' '$matrix_size
+    elif [[ $program = "cuda" ]]
+    then
+      command='src/cuda/cuda.exe '$threads' '$threads' '$matrix_size
+    else
+      command='mpirun -np '$threads' src/openmpi/openmpi.exe '$matrix_size
+    fi
+
     let total_time=0
     for (( i=0; i<$total_iterations; i++ ))
     do
-        result=$($program_execution_command)
-        result=$(echo ${result##*processed in})
-        result=$(echo ${result%%seconds*})
+        result=$($command)
+        result=$(echo ${result##*multiplied in })
+        result=$(echo ${result%% seconds*})
         
-        total_time=$(echo "scale = 3; $total_time+$result" | bc)
-        echo $result's'
+        total_time=$(echo "scale = 5; $total_time+$result" | bc)
     done
-    average_time=$(echo "scale = 3; $total_time/$total_iterations" | bc)
+    average_time=$(echo "scale = 5; $total_time/$total_iterations" | bc)
     echo $average_time
-}
-
-function create_openmp_execution()
-{
-    local threads=$1
-    local matrix_size=$2
-    
-    echo 'src/openmp/openmp_index.exe' $threads $matrix_size
-}
-
-function create_cuda_execution()
-{
-    local threads=$1
-    local matrix_size=$2
-    
-    echo 'src/cuda/cuda_index.exe' $threads $threads $matrix_size
-}
-
-function create_openmpi_execution()
-{
-    local nodes=$1
-    local matrix_size=$2
-    
-    echo 'mpirun -np' $nodes 'src/openmpi/openmpi_index.exe' $matrix_size
 }
 
 # Compile the code
@@ -56,63 +44,85 @@ echo
 result_file_name="execution.result.csv"
 
 # Compare by varying the matrix size
-echo 'Num of threads;Average time' > $result_file_name
-local N=(1 2 4 8 16 32 64 128 256 512 1024 2048)
-for $matrix_size in ${N[@]}
+echo "Comparing algorithms performance by varying the matrix size..."
+echo 'Matrix size;OpenMP;Cuda;OpenMPI' > $result_file_name
+N=(1 2 4 8 16 32 64 128 256 512 1024 2048)
+for matrix_size in ${N[@]}
 do
-    local result_file_line=$matrix_size
-    local execution_command
-    local time_result
+    result_file_line=$matrix_size
+    time_result=''
     
     # Execute open_mp code
-    execution_command=$(create_openmp_execution 16 $N)
-    time_result=$(take_time $execution_command)
+    echo "Processing OpenMP:"
+    echo "Threads: 16"
+    echo "Matrix size: $matrix_size"
+    echo
+    time_result=$(take_time openmp 16 $matrix_size)
     result_file_line+=';'$time_result
 
     # Execute cuda code
-    execution_command=$(create_cuda_execution 2048 $N)
-    time_result=$(take_time $execution_command)
+    echo "Processing CUDA:"
+    echo "Threads: 1024"
+    echo "Matrix size: $matrix_size"
+    echo
+    time_result=$(take_time cuda 1024 $matrix_size)
     result_file_line+=';'$time_result
 
     # Execute open_mpi
-    execution_command=$(create_openmpi_execution 8 $N)
-    time_result=$(take_time $execution_command)
+    echo "Processing OpenMPI:"
+    echo "Threads: 8"
+    echo "Matrix size: $matrix_size"
+    echo
+    time_result=$(take_time openmpi 8 $matrix_size)
     result_file_line+=';'$time_result
 
     # Save the result into the .csv file
     echo $result_file_line >> $result_file_name
 done
+echo
 
 echo >> $result_file_name
 
 # Get Algorithms times
-N=(1024 2048 1024)
-local threads_group=((1 2 4 8 16 32 64) (1 2 4 8 16 64 128 256 512 1024 2048) (1 2 3 4 5 6 7 8))
-for i in ${!threads_group[@]}
+echo "Taking algorithms performance by varying the number of threads..."
+echo
+declare -a openmp_threads=(1 2 4 8 16 32 64)
+declare -a cuda_threads=(1 2 4 8 16 64 128 256 512 1024 2048)
+declare -a openmpi_threads=(1 2 3 4 5 6 7 8)
+declare -a threads_groups=("openmp_threads" "cuda_threads" "openmpi_threads")
+N=(512 1024 512)
+for i in ${!N[@]}
 do
+  matrix_size=${N[$i]}
+  threads_group="${threads_groups[$i]}"
+  lst="$threads_group[@]"
+
+  program=''
+
+  if (( i == 0 ))
+  then
+    program='openmp'
+  elif (( i == 1 ))
+  then
+    program='cuda'
+  else
+    program='openmpi'
+  fi
+
+  echo $program >> $result_file_name
   echo 'Num of threads;Time' >> $result_file_name
-  local matrix_size=${N[$i]}
-  local execution_command
 
-  for $threads in ${threads_group[$i]}
+  for threads in "${!lst}"
   do
-    local result_file_line=$threads
-    local time_result
+    echo "Executing $program using $threads threads and $matrix_size for matrix size"
+    result_file_line=$threads
+    time_result=''
 
-    if (( i == 0 ))
-    then
-      execution_command=$(create_openmp_execution $threads $matrix_size)
-    elif (( i == 1 ))
-    then
-      execution_command=$(create_cuda_execution $threads $matrix_size)
-    else
-      execution_command=$(create_openmpi_execution $threads $matrix_size)
-    fi
-
-    time_result=$(take_time $execution_command)
+    time_result=$(take_time $program $threads $matrix_size)
     result_file_line+=';'$time_result
 
-    echo $time_result >> result_file_name
+    echo $result_file_line >> $result_file_name
   done
-  echo >> result_file_name
+  echo >> $result_file_name
+  echo
 done

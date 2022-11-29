@@ -16,7 +16,7 @@ int num_of_threads;
 // Total execution time expressed in milliseconds
 double total_execution_time_ms = 0.0;
 
-void setup_mul_matrixes(struct Matrix *a, struct Matrix *b, struct Matrix *result)
+void mul_matrixes(struct Matrix *a, struct Matrix *b, struct Matrix *result)
 {
   #pragma omp parallel num_threads(num_of_threads)
   {
@@ -71,7 +71,7 @@ int main(int argc, const char **argv)
   struct Matrix *matrix_b = generate_matrix(matrix_size, true);
   struct Matrix *matrix_result = generate_matrix(matrix_size, false);
 
-  setup_mul_matrixes(matrix_a, matrix_b, matrix_result);
+  mul_matrixes(matrix_a, matrix_b, matrix_result);
 
   // cout << "Matrix A:" << endl;
   // print_matrix(matrix_a);
