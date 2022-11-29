@@ -46,7 +46,7 @@ result_file_name="execution.result.csv"
 # Compare by varying the matrix size
 echo "Comparing algorithms performance by varying the matrix size..."
 echo 'Matrix size;OpenMP;Cuda;OpenMPI' > $result_file_name
-N=(1 2 4 8 16 32 64 128 256 512 1024 2048)
+N=(1 2 4 8 16 32 64 128 256 512 1024)
 for matrix_size in ${N[@]}
 do
     result_file_line=$matrix_size
@@ -87,7 +87,7 @@ echo >> $result_file_name
 echo "Taking algorithms performance by varying the number of threads..."
 echo
 declare -a openmp_threads=(1 2 4 8 16 32 64)
-declare -a cuda_threads=(1 2 4 8 16 64 128 256 512 1024 2048)
+declare -a cuda_threads=(1 16 64 128 256 512 1024)
 declare -a openmpi_threads=(1 2 3 4 5 6 7 8)
 declare -a threads_groups=("openmp_threads" "cuda_threads" "openmpi_threads")
 N=(512 1024 512)
